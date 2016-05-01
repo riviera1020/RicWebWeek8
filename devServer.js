@@ -1,28 +1,36 @@
-var path = require('path');
-var express = require('express');
-var webpack = require('webpack');
-var config = require('./webpack.config.dev');
+/* eslint no-console: 0 */
+const path = require('path');
+const express = require('express');
+const webpack = require('webpack');
+const proxy = require('proxy-middleware');
+const config = require('./webpack.config.dev');
+require('./server/run');
 
-var app = express();
-var compiler = webpack(config);
+const API_PORT = 8080;
+const DEV_PORT = 3000;
+
+const app = express();
+const compiler = webpack(config);
 
 app.use(require('webpack-dev-middleware')(compiler, {
-	publicPath: config.output.publicPath,
-	stats: {
-		colors: true
-	}
+  noInfo: true,
+  publicPath: config.output.publicPath,
 }));
 
 app.use(require('webpack-hot-middleware')(compiler));
 
-app.get('*', function(req, res) {
-	res.sendFile(path.join(__dirname, 'index.html'));
+app.use('/public', express.static('public'));
+app.use('/api', proxy(`http://localhost:${API_PORT}/api`));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-app.listen(3000, 'localhost', function(err) {
-	if (err) {
-		console.log(err);
-		return;
-	}
-	console.log('Listening at http://localhost:3000');
+app.listen(DEV_PORT, (err) => {
+  if (err) {
+    console.log(err);
+    return;
+  }
+
+  console.log('Listening at http://localhost:3000');
 });
