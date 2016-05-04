@@ -1,0 +1,9 @@
+.container-fluid {
+    padding-top: 300px;
+    padding-bottom: 300px;
+}
+
+.bg-1 { 
+    background-color: #1abc9c;
+    color: #ffffff;
+}

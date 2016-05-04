@@ -7,11 +7,22 @@ import './UsersPage.css';
 class UsersPage extends Component {
   constructor(props, context) {
     super(props, context);
-    this.state = {};
+    this.state = {
+      users: []
+    };
+    this.getUsers = this.getUsers.bind(this);
+  }
+
+  getUsers(data) {
+    console.log(data.users);
+    this.setState({
+      users: data.users
+    });
   }
 
   componentDidMount() {
-    fetch('/users')
+    let getUsers = this.getUsers;
+    fetch('/api/users')
       .then(function(response) {
         if (response.status >= 200 && response.status < 300) {
           return response;
@@ -25,44 +36,29 @@ class UsersPage extends Component {
         return response.json();
       })
       .then(function(data) {
-        console.log('request succeeded with JSON response', data)
-      })
-      .catch(function(error) {
-        console.log('request failed', error)
-      });
-    /*fetch('/users', {
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        }
-      })
-      .then(function(response) {
-        response.json()
-          .then(function(data) {
-            console.log(data);
-          })
-          .catch(function(err) {
-            console.log("Json Error : -S", err);
-          });
+        console.log('request succeeded with JSON response', data);
+        getUsers(data);
       })
       .catch(function(err) {
-        console.log("Fetch Error : -S ", err);
-      });*/
-
-    /*fetch('/users.json')
-      .then(function(response) {
-        return response.json()
-      }).then(function(json) {
-        console.log('parsed json', json)
-      }).catch(function(ex) {
-        console.log('parsing failed', ex)
-      });*/
+        console.log('request fail', err);
+      });
   }
 
   render() {
+    const users = this.state.users;
     return (
-      <div>
+      <div className="container-fluid bg-1 text-center">
         <h1>UsersPage</h1>
+          <div className="row">
+            <div className="col-sm-6">
+              <h3>{users[0].name}</h3>
+              <p>{users[0].age}</p>    
+            </div>
+            <div className="col-sm-6">
+              <h3>{users[1].name}</h3>
+              <p>{users[1].age}</p>    
+            </div>
+          </div>
       </div>
     );
   }
